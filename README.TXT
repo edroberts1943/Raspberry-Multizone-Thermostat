@@ -1,5 +1,7 @@
 PROJECT TITLE: Raspberry Multiple Thermostat Controller
 
+This repository comprises a complete BlueJ Project.
+
 ===================================================================================================
 WARNING: THIS PROJECT IS FOR EDUCATIONAL PURPOSES ONLY. IT IS NOT WARRANTED OR PROPOSED AS SUITABLE
 FOR ANY USE OR PURPOSE. ANY USE OF THIS INFORMATION IS AT THE USERS OWN RISK. DAMAGE TO EQUIPMENT,
