@@ -1,0 +1,116 @@
+# Raspberry Multi-zone Thermostat
+
+The **Raspberry Multi-zone Thermostat** project was created to satisfy several objectives:
+
+- Gain familarity with the Raspberry 3 Pi
+
+- Learn the BlueJ IDE
+
+- Illustrate the use of Object-oriented Programming with a reasonably complex project
+- To implement a facility I need  to better manage my home HVAC system.
+
+All of these objectives have been achieved, I believe.
+
+## Overview
+
+I live in a two-story home that has a single HVAC system serving the entire house. It heats and cools both stories well.  However,there is a single thermostat in a lowerlevel hall. It is very hard to set it so we are comfortable during the day in a lower family room or in the bedrooms upstairs in the evening.  Hence, we need at least two controlling thermostats.
+
+The Raspberry Multi-zone Thermost (MRT) consists of at least three Raspberry Pi 3 computers:
+
+- The controller computer interfaces with the HVAC system and includes a 4-Relay HAT
+
+- Each of gthe other computers (as many as you have zones to monitor) serve as remote thermostats. These interface with an AM2302 temperature and humidity sensor.
+
+- The MRT is programmable.  Each of the remote thermostats is assigned a unique unit number.  A schedule is maintained in the controller that specifies:
+- - Time of day this schedule will start
+- - Unit number to be controllig
+- - Target temperature
+- - Mode (off,cooling, heating)
+- It is possible to define a different operation for each minute of the day.
+
+## Software
+The application software is written entirely in Java. The project was carried out with the BlueJ IDE as my first experience with that platform.  The principal classes are:
+
+- DHT11 (Interface with the AM2302 temperature/humidity sensor)
+- RemoteThermometer
+- Controller
+- RelayHAT
+- Schedule
+- Entry
+- Target
+
+***DHT11 (AM2302) Class***
+This class implements the 1-wire interface with the sensor. The sensor can be either DHT11 or and AM2302 as these are functionally identical but with different physical packaging.  I used the AM2302.
+
+The 1-wire communications protocol implemented for the HDT11 is error prone. Communication failure rates of 30% to 50% are typical.  Since we require one good reading every minute, and the DHT11 can be scanned every two seconds, this is not a problem.  We simply use the last good scan.  The error rate is calculated as a matter of interest but is of no consequence.
+
+The 1-wire communications portion of this class is based upon an example by Eric Smith: *https://stackoverflow.com/questions/28486159/read-temperature-from-dht11-using-pi4j*
+
+***RemoteThermometer Class***
+The RemoteThermometer reads its unit number from a text file, initializes the DHT11 and then begins to listen for queries from the Controller on port 9090.  When a query is received, the RemoteThermometer responds with: 
+
+- It's unit number
+- Current temperature
+- Current humidity
+- Calculated communications failure rate
+
+The RemoteThermometer then waits for the next query from the controller.
+
+
+***Schedule Class***
+This class reads the program schedule from a text file and constructs a schedule consisting of and Entry and Target instance for each line of the schedule.
+
+***Entry***
+Contains the time and a Target object for each line of the schedule.
+
+***Target***
+Specifies the following for each Entry:
+
+- unit
+- target temperature
+- mode of operation
+
+***Controller Class***
+The Controller class performs the following housekeeping and error checks upon initialization:
+
+- Instantiates the Schedule
+- Searches the IP address range 192.168.1.(0 - 999) for RemoteThermometers.
+- Creates a vector of all RemoteThermometes found
+- Compares the unit requirements of the schedule with the RemoteThermometers it found.  
+- If all the required remote thermometers are not found, the schedule will be re-initialized and an new search for RemoteThermometers will be initiated.  This sequence will be repeated up to 10 times.
+- If all required RemoteThermometers are found, the controler will enter a loop to control the HVAC each minute in accordance with the schedule.
+
+***RelayHAT Class***
+This class provides a relay interface between the controller and the HVAC system. It is important to note that documentation received with the 4 Channel Relay HAT is wrong. I spent several hours to determine that the **GPIO pins specified for the HAT are incorrect** for the Pi 3. The correct pins are identified in the code.
+
+##Physical Considerations##
+
+***4 Channel Relay HAT***
+The 4 Channel Relay HAT imposed two limitations on my original plans for the RMT. 
+
+The Raspberry Pi 3 is fully capable of supporting both a controller and remote thermostat instance running on the same computer. That was my original plan.  However, when I received  the HAT, I learned that it makes no provision to expose unused GIOP pins that would have been used to connect the sensor.  Hence, a dedicated Raspberry is required for the controller.
+
+I had planned to install the controller in a Canada Kit Pi 3 case.  The HAT is too large to fit in that case so an alternative had to be found.
+
+The connector for wiring the relays to the HVAC system is very small. Although rated at 2A at 30V, it is a very tight fit to get the wiring in.  The relays are independent (a good thing) so the power supply line has to be routed to the  common contact of each of the first 3 relays. One might wish to consider bringing the contats out to a larger terminal board.
+
+***AM2302 Temperature / Humidity Sensor***
+In order to prevent heat from the Raspberry computer from distorting the measurements, the sensor should be mounted away from the Raspberry.
+
+***General***
+The choice of packaging is up the the preferances of the builder. Given the restrictions mentioned above, the choices are endless. No doubt, many will conceive of packaging ideas far superior to any that I might imagine.
+
+##Testing##
+I can not over emphasize the importance of testing.  Before this project is placed into operation, the following tests must all be completed:
+
+- Powering on the Raspberry computer starts the controller and remote thermostats.
+- All remote thermostats are discovered by the controller.
+- The schedule functions as defined for a full 24 hour period.
+- The HVAC interface is correct for your system.
+- The physical connections with the HVAC system are made in a manner that these will not be disturbed or become loose over time.
+- Power to each of the Raspberry computers is secure and will not be disturbed.  The loss of one remote thermostat will shut the system down.
+
+##Conclusions##
+All of the objectives mentiond in the first section of this article were achieved. I found that using BlueJ is intuitive and believe that it is a very good IDE to learn Java.  It reinforces the concept of object-oriented design and and provides a visual representation of the relationships between the project classes. The utility of its built-in test facility was appreciated.  I do not  have the official BlueJ book so I am sure that I missed some of its inherent capability.  One ehnacement I would like to see in BlueJ is statement completion. That is, for example, if I type "System.out." it would be nice to be presentd a list of the possible methods that could be appended.
+
+The Raspberry Pi 3 provides far more capability than is required for this project.  It is nice to have that kind of reserve. Does this lead to sloppy programming?  I don't think so. It means you don't need to spend hours trying to shoe-horn a project into a small processor nearly filled to capacity. Or as a friend used to say, "perfection is the enemy of good enough!"  The Raspberry is *good enough*.
