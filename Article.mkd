@@ -110,6 +110,14 @@ I can not over emphasize the importance of testing.  Before this project is plac
 - The physical connections with the HVAC system are made in a manner that these will not be disturbed or become loose over time.
 - Power to each of the Raspberry computers is secure and will not be disturbed.  The loss of one remote thermostat will shut the system down.
 
+##Future Enhancements##
+Several enhancements are planned for the MRT system. These include the following:
+
+- Data collection of one day's temperature and humidity.  Data will be collected from each remote thermometer at least once every five minutes.
+- A graphical user interface class that can be invoked from any computer on the network to display the collected history graphically and to modify the control program currently executing.
+- Ability to store multiple schedules according to season and to have these invoked based upon the date of the year.
+- A graphical user interface to manage the installation and activation of the elements of the system (controller and thermometers).
+
 ##Conclusions##
 All of the objectives mentiond in the first section of this article were achieved. I found that using BlueJ is intuitive and believe that it is a very good IDE to learn Java.  It reinforces the concept of object-oriented design and and provides a visual representation of the relationships between the project classes. The utility of its built-in test facility was appreciated.  I do not  have the official BlueJ book so I am sure that I missed some of its inherent capability.  One ehnacement I would like to see in BlueJ is statement completion. That is, for example, if I type "System.out." it would be nice to be presentd a list of the possible methods that could be appended.
 
