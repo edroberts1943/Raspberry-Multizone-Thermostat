@@ -90,7 +90,7 @@ The 4 Channel Relay HAT imposed two limitations on my original plans for the RMT
 
 The Raspberry Pi 3 is fully capable of supporting both a controller and remote thermostat instance running on the same computer. That was my original plan.  However, when I received  the HAT, I learned that it makes no provision to expose unused GIOP pins that would have been used to connect the sensor.  Hence, a dedicated Raspberry is required for the controller.
 
-I had planned to install the controller in a Canada Kit Pi 3 case.  The HAT is too large to fit in that case so an alternative had to be found.
+I had planned to install the controller in a CanaKit Pi 3 case.  The HAT is too large to fit in that case so an alternative had to be found.
 
 The connector for wiring the relays to the HVAC system is very small. Although rated at 2A at 30V, it is a very tight fit to get the wiring in.  The relays are independent (a good thing) so the power supply line has to be routed to the  common contact of each of the first 3 relays. One might wish to consider bringing the contats out to a larger terminal board.
 
