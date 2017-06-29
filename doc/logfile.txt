@@ -1,0 +1,44 @@
+Class documentation
+<---- javadoc command: ---->
+/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/bin/javadoc
+-author
+-version
+-nodeprecated
+-package
+-noindex
+-notree
+-nohelp
+-nonavbar
+-source
+1.8
+-classpath
+/usr/share/bluej/bluejcore.jar:/usr/share/bluej/junit-4.8.2.jar:/usr/share/bluej/userlib/pi4j-device.jar:/usr/share/bluej/userlib/pi4j-core.jar:/usr/share/bluej/userlib/pi4j-gpio-extension.jar:/usr/share/bluej/userlib/pi4j-service.jar:/home/pi/workspace/Raspberry Multiple Zone Thermostat
+-d
+/home/pi/workspace/Raspberry Multiple Zone Thermostat/doc
+-encoding
+UTF-8
+-charset
+UTF-8
+-docletpath
+/usr/share/bluej/bjdoclet.jar
+-doclet
+bluej.doclet.doclets.formats.html.HtmlDoclet
+/home/pi/workspace/Raspberry Multiple Zone Thermostat/StartThermostat.java
+<---- end of javadoc command ---->
+Loading source file /home/pi/workspace/Raspberry Multiple Zone Thermostat/StartThermostat.java...
+Constructing Javadoc information...
+Standard Doclet version 1.8.0_65
+Building tree for all the packages and classes...
+Generating /home/pi/workspace/Raspberry Multiple Zone Thermostat/doc/StartThermostat.html...
+/home/pi/workspace/Raspberry Multiple Zone Thermostat/StartThermostat.java:30: warning - @param argument "y" is not a parameter name.
+/home/pi/workspace/Raspberry Multiple Zone Thermostat/StartThermostat.java:30: warning - @return tag cannot be used in method with void return type.
+Generating /home/pi/workspace/Raspberry Multiple Zone Thermostat/doc/package-frame.html...
+Generating /home/pi/workspace/Raspberry Multiple Zone Thermostat/doc/package-summary.html...
+Generating /home/pi/workspace/Raspberry Multiple Zone Thermostat/doc/constant-values.html...
+Building index for all the packages and classes...
+Building index for all classes...
+Generating /home/pi/workspace/Raspberry Multiple Zone Thermostat/doc/allclasses-frame.html...
+Generating /home/pi/workspace/Raspberry Multiple Zone Thermostat/doc/allclasses-noframe.html...
+Generating /home/pi/workspace/Raspberry Multiple Zone Thermostat/doc/index.html...
+Generating /home/pi/workspace/Raspberry Multiple Zone Thermostat/doc/stylesheet.css...
+2 warnings

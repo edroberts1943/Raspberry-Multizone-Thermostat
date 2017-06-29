@@ -1,0 +1,22 @@
+#BlueJ class context
+comment0.params=
+comment0.target=RemoteThermometer()
+comment0.text=\n\ Constructors\ for\ objects\ of\ class\ RemoteThermometer\n
+comment1.params=unit
+comment1.target=RemoteThermometer(int)
+comment2.params=
+comment2.target=void\ run()
+comment2.text=\n\ run()\ \ \ This\ is\ the\ main\ run\ loop\ of\ the\ remoteThermometer.\n\ \n\ @param\ \ \ \ \ NA\n\ @return\ \ \ \ NA\n
+comment3.params=
+comment3.target=float\ getPercentFail()
+comment3.text=\n\ getPercentFail()\ \ \ \ Returns\ the\ calculated\ failure\ rate\ of\ communications\ with\ the\ thermostat.\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ The\ one-wire\ communications\ with\ the\ temperature/humidity\ sensor\ is\ very\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ error-prone.\ Error\ rates\ of\ 50\ to\ 80%\ are\ normal.\ \ This\ is\ overcome\ by\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ the\ remote\ thermometer\ collecting\ information\ more\ often\ that\ is\ needed\ and\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ saving\ the\ last\ good\ values\ received.\n\ \n\ @param\ \ \ \ \ NA\n\ @return\ \ \ \ communications\ failure\ rate\n
+comment4.params=
+comment4.target=float\ getTemperature()
+comment4.text=\n\ getTemperature\ \ \ Returns\ the\ value\ of\ the\ temperature\ measured\ at\ this\ remote\ thermostat.\n\ \n\ @param\ \ \ \ \ NA\n\ @return\ \ \ \ temperature\ measured\ at\ this\ remote\ thermostat\n
+comment5.params=
+comment5.target=float\ getHumidity()
+comment5.text=\n\ getHumidity\ \ \ Returns\ the\ value\ of\ the\ humidity\ measured\ at\ this\ remote\ thermostat.\n\ \n\ @param\ \ \ \ \ NA\n\ @return\ \ \ \ relative\ humidity\ measured\ at\ this\ remote\ thermostat\n
+comment6.params=
+comment6.target=int\ getUnitNumber()
+comment6.text=\n\ getUnitNumber\ \ \ Returns\ the\ value\ of\ the\ unit\ number\ of\ this\ remote\ thermostat\ instance.\n\ \n\ @param\ \ \ \ \ NA\n\ @return\ \ \ \ unit\ number\ of\ the\ remoteThermostat.\n
+numComments=7

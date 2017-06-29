@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.params=
+comment0.target=Diagnostic()
+comment0.text=\n\ Constructor\ for\ objects\ of\ class\ Diagnostic\n
+comment1.params=s
+comment1.target=void\ print(java.lang.String)
+comment1.text=\n\ print(String\ s)\n\ \n\ @param\ \ s\ \ \ the\ string\ to\ be\ conditionally\ printed.\n\ @return\ \ \ \ \ NONE\ \ prints\ the\ string\ if\ on\ is\ true.\n
+numComments=2
