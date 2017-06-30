@@ -28,7 +28,7 @@ VERSION 2017-06-22
 AUTHORS: Edward B. Roberts PE
          ed.roberts@verizon.net
          
-HOW TO START THIS PROJECT:
+HOW TO START THIS PROJECT:     THIS SECTION IS NOT COMPLETE OR CORRECT AS OF 6-29-17
          Install hardware and wire the contoller raspberry with a 4-relay HAT to the HVAC controls.
          
          On the controller raspberry, edit the file "schedule.txt" to specify the schedule desired
