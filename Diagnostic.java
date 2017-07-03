@@ -27,4 +27,9 @@ public class Diagnostic
     {
         if (on) System.out.println(s);
     }
+    
+    public void printNoFeed( String s )
+    {
+        if (on) System.out.print(s);
+    }
 }
