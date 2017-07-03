@@ -19,7 +19,7 @@ public class Controller extends Thread
     String []theThermostatIPs = {"","","","","",""}; // There can be up to 6 thermostats. This array may be expanded to as many
                                                      // remotes as required. There are no other places expansion is required.
     int period = 1;                   // minutes- specifies the frequency the controller runs
-    int minCompressOffMinutes = 5;    //Minimum time (minutes) that the compressor should be off before turning back on again.
+    int minCompressOffMinutes = 3;    //Minimum time (minutes) that the compressor should be off before turning back on again.
     float heatingDeadband = (float) 0.75;
     float coolingDeadband = (float) 0.75;
     
@@ -61,8 +61,12 @@ public class Controller extends Thread
          attempts += 1;
          if ( !verifyThermometers()) {
              System.out.println("Required remote thermometers were not found. Attempt " + attempts + " of 10");
+             if(attempts == 9) {
+                 d.print("After 10 attempts, the required thermometers can not be found. Controller is shut down.");
+                 System.exit(0);
+                }
              try {
-                 Thread.sleep(5000);
+                 Thread.sleep(60000); // Delay 1 minute before trying again
                } catch (Exception es) {
                    es.printStackTrace();
                } 
@@ -101,6 +105,7 @@ public class Controller extends Thread
                 // switch on mode
                 switch(mode){
                    case heating: 
+                        flash(1);
                         // too hot
                         d.print("HEATING");
                         if ((currentTemperature > (targetTemperature + heatingDeadband)) && (furnaceState == State.on)) {
@@ -123,6 +128,7 @@ public class Controller extends Thread
                         }
                         break;
                    case cooling: 
+                       flash(2);
                        // too hot
                        d.print("COOLING");
                        if ((currentTemperature > (targetTemperature + coolingDeadband)) && (compressorState == State.off)){
@@ -139,14 +145,15 @@ public class Controller extends Thread
                               Thread.sleep(120000);
                               d.print("Turning fan off");
                               turnFanOff();
-                              d.print("Waiting additional 3 minutes to prevent compressor from turning on too early.");
-                              Thread.sleep(180000); // Delay 3 more minutes so compressor will not be damaged if turned on too soon.
+                              d.print("Waiting additional time to prevent compressor from turning on too early.");
+                              Thread.sleep(minCompressOffMinutes * 60000); // Delay 3 more minutes so compressor will not be damaged if turned on too soon.
                             } catch (Exception e1){
                                 e1.printStackTrace();
                             }
                         }
                         break;
                    case off: 
+                       flash(3);
                        turnCompressorOff();
                        turnFurnaceOff();
                        turnFanOff();
@@ -163,7 +170,7 @@ public class Controller extends Thread
                     int count = 0;
                     while (count < 60) {
                        Thread.sleep(1000); 
-                       System.out.print(".");
+                       d.printNoFeed(".");
                        count +=1;
                     }
                        // run again after period minutes.
@@ -269,6 +276,20 @@ private void turnCompressorOff(){
    
 }
 
+private void flash(int n) {
+    try {
+        int i = 0;
+        while (i < n) {
+            theHat.toggle(4);
+            Thread.sleep(500);
+            theHat.toggle(4);
+            Thread.sleep(500);
+            i += 1;
+           }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * readRemoteThermometer(int unit)
