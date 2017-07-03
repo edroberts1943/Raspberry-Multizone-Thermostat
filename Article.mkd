@@ -1,5 +1,7 @@
 # Raspberry Multi-zone Thermostat
 
+This project implements a multizone thermostat that can control a HVAC system based upon a schedule of target temperatures,and controlling zones (remote thermometers). 
+
 The **Raspberry Multi-zone Thermostat** project was created to satisfy several objectives:
 
 - Gain familarity with the Raspberry 3 Pi
@@ -9,7 +11,6 @@ The **Raspberry Multi-zone Thermostat** project was created to satisfy several o
 - Illustrate the use of Object-oriented Programming with a reasonably complex project
 - To implement a facility I need  to better manage my home HVAC system.
 
-All of these objectives have been achieved, I believe.
 
 ## Overview
 
@@ -40,9 +41,9 @@ The application software is written entirely in Java. The project was carried ou
 - Target
 
 ***DHT11 (AM2302) Class***
-This class implements the 1-wire interface with the sensor. The sensor can be either DHT11 or and AM2302 as these are functionally identical but with different physical packaging.  I used the AM2302.
+This class implements the 1-wire interface with the sensor. The sensor can be either DHT11 or and AM2302 as these are functionally identical but with different physical packaging.  I used the AM2302 because it has a protected enclosure allowing it to be mounted away from the Raspberry where heat from the computer, though minimal, will not influence the temperature measurement.
 
-The 1-wire communications protocol implemented for the HDT11 is error prone. Communication failure rates of 30% to 50% are typical.  Since we require one good reading every minute, and the DHT11 can be scanned every two seconds, this is not a problem.  We simply use the last good scan.  The error rate is calculated as a matter of interest but is of no consequence.
+The 1-wire communications protocol implemented for the HDT11 is error prone. Communication failure rates of 30% to 50% are typical.  Since we require one good reading every minute, and the DHT11 can be scanned every two seconds, a high communications failure rate is not a problem.  We simply use the last good scan.  The error rate is calculated as a matter of interest but is of no consequence.
 
 The 1-wire communications portion of this class is based upon an example by Eric Smith: *https://stackoverflow.com/questions/28486159/read-temperature-from-dht11-using-pi4j*
 
@@ -54,11 +55,11 @@ The RemoteThermometer reads its unit number from a text file, initializes the DH
 - Current humidity
 - Calculated communications failure rate
 
-The RemoteThermometer then waits for the next query from the controller.
+The RemoteThermometer then waits for the next query from the controller.  Though not implemented, the RemoteThermometer may be queried by other applications as well.
 
 
 ***Schedule Class***
-This class reads the program schedule from a text file and constructs a schedule consisting of and Entry and Target instance for each line of the schedule.
+This class reads the program schedule from a text file and constructs a schedule consisting of and Entry and Target instance for each line of the schedule. The controller instantiates an instance of schedule from which it gets the current target temperature, controlling unit, and mode each control cycle.
 
 ***Entry***
 Contains the time and a Target object for each line of the schedule.
@@ -77,11 +78,16 @@ The Controller class performs the following housekeeping and error checks upon i
 - Searches the IP address range 192.168.1.(0 - 999) for RemoteThermometers.
 - Creates a vector of all RemoteThermometes found
 - Compares the unit requirements of the schedule with the RemoteThermometers it found.  
-- If all the required remote thermometers are not found, the schedule will be re-initialized and an new search for RemoteThermometers will be initiated.  This sequence will be repeated up to 10 times.
-- If all required RemoteThermometers are found, the controler will enter a loop to control the HVAC each minute in accordance with the schedule.
+- If all the required remote thermometers are not found, the schedule will be re-initialized and an new search for RemoteThermometers will be initiated.  This sequence will be repeated up to 10 times.  If the required remote thermometers are not found, the controller will shut down.
+- If all required RemoteThermometers are found, the controler will enter a loop to control the HVAC each minute in accordance with the schedule.  This control loop will continue indefinitely.
 
 ***RelayHAT Class***
-This class provides a relay interface between the controller and the HVAC system. It is important to note that documentation received with the 4 Channel Relay HAT is wrong. I spent several hours to determine that the **GPIO pins specified for the HAT are incorrect** for the Pi 3. The correct pins are identified in the code.
+This class provides a relay interface between the controller and the HVAC system. It is important to note that documentation received with the 4 Channel Relay HAT is wrong. I spent several hours to determine that the **GPIO pins specified in the 4-Relay HAT djocumentation are incorrect** for the Pi 3. The correct pins are:
+
+- Relay1    GPIO_25
+- Relay2    GPIO_24
+- Relay3    GPIO_23
+- Relay4    GPIO_22
 
 ##Physical Considerations##
 
@@ -92,13 +98,31 @@ The Raspberry Pi 3 is fully capable of supporting both a controller and remote t
 
 I had planned to install the controller in a CanaKit Pi 3 case.  The HAT is too large to fit in that case so an alternative had to be found.
 
-The connector for wiring the relays to the HVAC system is very small. Although rated at 2A at 30V, it is a very tight fit to get the wiring in.  The relays are independent (a good thing) so the power supply line has to be routed to the  common contact of each of the first 3 relays. One might wish to consider bringing the contats out to a larger terminal board.
+The connector for wiring the relays to the HVAC system is very small. Although rated at 2A at 30V, it is a very tight fit to get the wiring in.  The relays are independent (a good thing) so the power supply line has to be routed to the  common contact of each of the first 3 relays. One might wish to consider bringing the contacts out to a larger terminal board.
 
 ***AM2302 Temperature / Humidity Sensor***
 In order to prevent heat from the Raspberry computer from distorting the measurements, the sensor should be mounted away from the Raspberry.
 
 ***General***
 The choice of packaging is up the the preferances of the builder. Given the restrictions mentioned above, the choices are endless. No doubt, many will conceive of packaging ideas far superior to any that I might imagine.
+
+##Running with Pre-compiled System##
+Two tar files are provided in the project repository that contain Java programs for the controller and for the remote thermostats.  These are
+StartController.tgz and StartRemoteThermometer.tgz. Untar these files in directories /home/pi/workspace/StartController and /home/pi/workspace/StartThermometer respectively.
+
+On each RemoteThermometer Raspberry, edit the file /home/pi/workspace/StartThermometer/thermometer.txt to specify the correct unit number for that thermometer.
+
+On the Controller Raspberry, edit the file /home/pi/workspace/StartController/schedule.txt making sure that only remote units you have installed are specified in the schedule.
+
+On the Controller Raspberry, edit file /etc/local.d to add the line:
+
+"sudo java -jar /home/pi/workspace/StartController/StartController.jar"
+
+On the RemoteThermostat Raspberries, edit file /etc/local.d to add the line:
+
+"sudo java -rar /home/pi/workspace/StartThermometer/StartThermometer.jar"
+
+
 
 ##Testing##
 I can not over emphasize the importance of testing.  Before this project is placed into operation, the following tests must all be completed:
@@ -117,8 +141,9 @@ Several enhancements are planned for the MRT system. These include the following
 - A graphical user interface class that can be invoked from any computer on the network to display the collected history graphically and to modify the control program currently executing.
 - Ability to store multiple schedules according to season and to have these invoked based upon the date of the year.
 - A graphical user interface to manage the installation and activation of the elements of the system (controller and thermometers).
+- Use relative humidity (sent to the controller by the thermometers) to offset the target temperature to achieve more comfort when both heating and cooling.
 
 ##Conclusions##
-All of the objectives mentiond in the first section of this article were achieved. I found that using BlueJ is intuitive and believe that it is a very good IDE to learn Java.  It reinforces the concept of object-oriented design and and provides a visual representation of the relationships between the project classes. The utility of its built-in test facility was appreciated.  I do not  have the official BlueJ book so I am sure that I missed some of its inherent capability.  One ehnacement I would like to see in BlueJ is statement completion. That is, for example, if I type "System.out." it would be nice to be presentd a list of the possible methods that could be appended.
+All of the objectives mentiond in the first section of this article were achieved. I found that using BlueJ is intuitive and believe that it is a very good IDE to learn Java.  It reinforces the concept of object-oriented design and and provides a visual representation of the relationships between the project classes. The utility of its built-in test facility is appreciated.  I do not  have the official BlueJ book so I am sure that I missed some of its inherent capability.  One ehnacement I would like to see in BlueJ is statement completion. That is, for example, if I type "System.out." it would be nice to be presentd a list of the possible methods that could be appended.
 
 The Raspberry Pi 3 provides far more capability than is required for this project.  It is nice to have that kind of reserve. Does this lead to sloppy programming?  I don't think so. It means you don't need to spend hours trying to shoe-horn a project into a small processor nearly filled to capacity. Or as a friend used to say, "perfection is the enemy of good enough!"  The Raspberry is *good enough*.
