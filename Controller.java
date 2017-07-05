@@ -12,6 +12,10 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 import java.time.LocalDateTime;
 import java.util.Vector;
+import java.io.PrintWriter;
+import java.io.File;
+import java.time.LocalDateTime;
+import java.io.FileOutputStream;
 
 public class Controller extends Thread
 {
@@ -20,8 +24,8 @@ public class Controller extends Thread
                                                      // remotes as required. There are no other places expansion is required.
     int period = 1;                   // minutes- specifies the frequency the controller runs
     int minCompressOffMinutes = 3;    //Minimum time (minutes) that the compressor should be off before turning back on again.
-    float heatingDeadband = (float) 0.75;
-    float coolingDeadband = (float) 0.75;
+    float heatingDeadband = (float) 0.5;
+    float coolingDeadband = (float) 0.5;
     
     // Variables the user should have no need to change
     private int x;
@@ -73,14 +77,15 @@ public class Controller extends Thread
         } else break;
     }
       d.print("Completed search for remote thermostats: " + numberOfThermostats + " found.");
+      int j =0;
+      while(j < 6) {
+          d.print("theThermostatIPs["+j+"] is: "+theThermostatIPs[j]);
+          j += 1;
+        }
       //mode = Mode.cooling; // Need to implement persistance for mode.
-      // ASet up relay outputs for 4-relay Hat
-      // GPIO     Relay    Function
-      //   26       1        Fan
-      //   19       2        Compressor
-      //   13       3        Furnace
-      //   06       4        not used, reserved for alarm
+
       //testRelays();
+      flash(10);
       this.start();
     }
     /**
@@ -91,7 +96,11 @@ public class Controller extends Thread
      */
     public void run(){   
             d.print("The Controller has started running.");
+            int looper = 0;
             while(true) {
+                if (looper >= 100) looper = 0;
+                if ( (looper % 10 ) == 0 ) logTemps();   // Every 10 cycles make log entry.
+                looper += 1;
                 String sMode = schedule.getTargetMode();
                 if(sMode.equals("cooling") ) mode = Mode.cooling;
                 if(sMode.equals("heating") ) mode = Mode.heating;
@@ -105,7 +114,7 @@ public class Controller extends Thread
                 // switch on mode
                 switch(mode){
                    case heating: 
-                        flash(1);
+                        flash(3);
                         // too hot
                         d.print("HEATING");
                         if ((currentTemperature > (targetTemperature + heatingDeadband)) && (furnaceState == State.on)) {
@@ -121,10 +130,12 @@ public class Controller extends Thread
                             turnFanOff();
                         }
                         // too cold
-                        if ((currentTemperature < (targetTemperature - heatingDeadband)) && (furnaceState == State.off)){
+                        else if ((currentTemperature < (targetTemperature - heatingDeadband)) && (furnaceState == State.off)){
                             d.print("Too cold turning fan and furnace on");
                             turnFanOn();
                             turnFurnaceOn();
+                        } else {
+                            d.print("Furnace state is " + furnaceState + " no action required.");
                         }
                         break;
                    case cooling: 
@@ -137,7 +148,7 @@ public class Controller extends Thread
                            turnCompressorOn();
                         }
                         // too cold
-                       if ((currentTemperature < (targetTemperature - coolingDeadband)) && (compressorState == State.on) ){
+                       else if ((currentTemperature < (targetTemperature - coolingDeadband)) && (compressorState == State.on) ){
                            d.print("Too cold, turning compressor off");
                            turnCompressorOff();
                            try {
@@ -150,10 +161,12 @@ public class Controller extends Thread
                             } catch (Exception e1){
                                 e1.printStackTrace();
                             }
+                        } else {
+                            d.print("Compressor state is " + compressorState + " no action required.");  
                         }
                         break;
                    case off: 
-                       flash(3);
+                       flash(1);
                        turnCompressorOff();
                        turnFurnaceOff();
                        turnFanOff();
@@ -302,6 +315,7 @@ private void flash(int n) {
     private float readRemoteThermometer(int unit) {
         float theTemperature = 999;
         String serverAddress = theThermostatIPs[unit];
+        d.print("The server address is: " + serverAddress);
         try{
            Socket  s = new Socket(serverAddress, 9090);
            BufferedReader input = new BufferedReader(new InputStreamReader(s.getInputStream()));
@@ -319,6 +333,21 @@ private void flash(int n) {
         return theTemperature;
     }
  
+    
+       private String pollRemoteThermometer(int unit) {
+        float theTemperature = 999;
+        String serverAddress = theThermostatIPs[unit];
+        String answer = "";
+        d.print("The server address is: " + serverAddress);
+        try{
+           Socket  s = new Socket(serverAddress, 9090);
+           BufferedReader input = new BufferedReader(new InputStreamReader(s.getInputStream()));
+           answer = input.readLine();
+        } catch (Exception e4) {
+            e4.printStackTrace();
+        } 
+        return answer;
+    }
     
 /**
      * findRemoteThermometers()     This method searched the address range 192.168.1.0 through 192.168.1.999 looking for remote thermometers.
@@ -430,4 +459,27 @@ private void flash(int n) {
             return true;
         }
     
+        private void logTemps() {
+            //LocalDateTime tick = new LocalDateTime();
+            PrintWriter out = null;
+            //String timeStamp = LocalDateTime.now();
+            try {
+                  out = new PrintWriter(new FileOutputStream(new File("/home/pi/controllerLog.txt"),true)); 
+                  //out.println(timeStamp);
+                  int index = 0;
+                  while (index < 6) {
+                      if (theThermostatIPs[index].length() > 4) {
+                          String reported = pollRemoteThermometer(index);
+                          reported = reported + " " + LocalDateTime.now();
+                          out.println(reported);
+                          d.print("*****> " +reported);
+                        }
+                        index += 1;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if (out != null) out.close();
+                }
+        }
    }

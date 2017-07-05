@@ -41,7 +41,7 @@ public class Schedule
         try {
            //Build theEntries Vector from the schedule file
            Scanner s = null;
-           s = new Scanner( new File("schedule.txt"));
+           s = new Scanner( new File("/home/pi/workspace/StartController/schedule.txt"));
            s.useDelimiter(",| |\n");
           
            while ((s.hasNext() ) && (count < 24)){
@@ -64,7 +64,7 @@ public class Schedule
                theUnits.add(thisUnit);
                thisTemperature = s.nextInt();
                thisMode = s.next();
-               d.print (thisTime + "   "+ thisUnit + "   " + thisTemperature + thisMode);
+               d.print (thisTime + "   "+ thisUnit + "   " + thisTemperature + "  " + thisMode);
                Entry thisEntry = new Entry(tt, thisUnit, thisTemperature,thisMode );
                theEntries.add(thisEntry);
                count +=1;
@@ -79,7 +79,7 @@ public class Schedule
     }
 
     /**
-     * getUnit()-- Returns the unit has is schduled to have control when called
+     * getUnit()-- Returns the unit that is schduled to have control when called
      * 
      * @param  NONE
      * @return Integer value of the currently scheduled unit (remote thermometer)
@@ -103,19 +103,22 @@ public class Schedule
     }
     
      /**
-     * setCurrentTarget()-- finds the target appropriate for the current time
-     * 
+     * setCurrentTarget()-- finds the target shedule entry appropriate for the current time based on
+     *                      the time of day, then sets currentTargetIndex internally which points to
+     *                      the entry to be used for scheduling.
      * @param  NONE
-     * @return NONE  sets the current target (unit, temperature) internally
+     * @return NONE 
      */
     public  void setCurrentTarget() {
         // calculate the integer value of te current time, eg. 1424 is 24 after two pm.
         String ts = LocalDateTime.now().toString();
         String hours = ts.substring(11);
         hours = hours.substring(0,2);
-        if (hours.charAt(0) == '0') hours = hours.substring(1);
         String minutes = ts.substring(14,16);
         String targets = hours + minutes;
+        // Process times near midnight so resulting targets will be a valid integer representation.
+        while ((targets.charAt(0) == '0') && (targets.length() > 1))targets = targets.substring(1);
+        if (targets.equals("") ) targets = "0";
         int target = Integer.parseInt(targets);
         int count = 0;
         while (count <  theEntries.size()){
@@ -124,6 +127,8 @@ public class Schedule
             count += 1;
         }
         currentTargetIndex = count - 1;
+        // Account for roll-over at midnight
+        if (theEntries.elementAt(1).time > target ) currentTargetIndex = 0;
     }
         
     
@@ -133,10 +138,10 @@ public class Schedule
     
     
     /**
-     * getTargetMode()-- Returns the target temperature for the time when called
+     * getTargetMode()-- Returns a String representation of the mode scheduled for the time when called.
      * 
      * @param  NONE
-     * @return Integer value of the target temperature
+     * @return String representation of the scheduled mode
      */
     public String getTargetMode() {
         setCurrentTarget();
