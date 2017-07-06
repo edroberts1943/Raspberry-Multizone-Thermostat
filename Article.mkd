@@ -1,4 +1,4 @@
-# Raspberry Multi-zone Thermostat
+`# Raspberry Multi-zone Thermostat
 
 This project implements a multizone thermostat that can control a HVAC system based upon a schedule of target temperatures,and controlling zones (remote thermometers). 
 
@@ -133,6 +133,15 @@ I can not over emphasize the importance of testing.  Before this project is plac
 - The HVAC interface is correct for your system.
 - The physical connections with the HVAC system are made in a manner that these will not be disturbed or become loose over time.
 - Power to each of the Raspberry computers is secure and will not be disturbed.  The loss of one remote thermostat will shut the system down.
+
+##Unforseen Problems##
+I suppose that there will always be some unforseen problems when one pursues a new project. This was no exception.  The surprise was that a major issue encountered was with Raspberry and Java.
+
+Java is supposed to be a *build once, run anywhere* language.  First, when I compiled the Controller on one Raspberry and then ported it to another for execution, the jar file would not run. After a bit of digging, I determined that different release levels of java were on the two machines.  I tried for several hours to get the older java updated but finally decided it was just too hard.  I copied the entire SD card image fromt he newer release, loaded it, and all became right with the world.
+
+Secondly, again with Java, I experimented loading Eclipse on one machine (not related to this project).  This corruped Java compatibility between the two machines and anther SD card re-load was in order.
+
+It would be nice to take the time to figure both of these issues out, but I have not done that and most probably will not.
 
 ##Future Enhancements##
 Several enhancements are planned for the MRT system. These include the following:
