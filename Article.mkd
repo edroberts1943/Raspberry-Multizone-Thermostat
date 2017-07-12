@@ -130,8 +130,7 @@ On the RemoteThermostat Raspberries, edit file /etc/local.d to add the line:
 
 
 
-##Testing##
-
+##Testing
 I can not over emphasize the importance of testing.  Before this project is placed into operation, the following tests must all be completed:
 
 - Powering on the Raspberry computer starts the controller and remote thermostats.
@@ -141,8 +140,7 @@ I can not over emphasize the importance of testing.  Before this project is plac
 - The physical connections with the HVAC system are made in a manner that these will not be disturbed or become loose over time.
 - Power to each of the Raspberry computers is secure and will not be disturbed.  The loss of one remote thermostat will shut the system down.
 
-##Unforseen Problems##
-
+##Unforseen Problems
 I suppose that there will always be some unforseen problems when one pursues a new project. This was no exception.  The surprise was that a major issue encountered was with Raspberry and Java.
 
 Java is supposed to be a *build once, run anywhere* language.  First, when I compiled the Controller on one Raspberry and then ported it to another for execution, the jar file would not run. After a bit of digging, I determined that different release levels of java were on the two machines.  I tried for several hours to get the older java updated but finally decided it was just too hard.  I copied the entire SD card image fromt he newer release, loaded it, and all became right with the world.
@@ -151,8 +149,7 @@ Secondly, again with Java, I experimented loading Eclipse on one machine (not re
 
 It would be nice to take the time to figure both of these issues out, but I have not done that and most probably will not.
 
-##Future Enhancements##
-
+##Future Enhancements
 Several enhancements are planned for the MRT system. These include the following:
 
 - Data collection of one day's temperature and humidity.  Data will be collected from each remote thermometer at least once every five minutes.
@@ -161,8 +158,7 @@ Several enhancements are planned for the MRT system. These include the following
 - A graphical user interface to manage the installation and activation of the elements of the system (controller and thermometers).
 - Use relative humidity (sent to the controller by the thermometers) to offset the target temperature to achieve more comfort when both heating and cooling.
 
-##Conclusions##
-
+##Conclusions
 All of the objectives mentiond in the first section of this article were achieved. I found that using BlueJ is intuitive and believe that it is a very good IDE to learn Java.  It reinforces the concept of object-oriented design and and provides a visual representation of the relationships between the project classes. The utility of its built-in test facility is appreciated.  I do not  have the official BlueJ book so I am sure that I missed some of its inherent capability.  One ehnacement I would like to see in BlueJ is statement completion. That is, for example, if I type "System.out." it would be nice to be presentd a list of the possible methods that could be appended.
 
 The Raspberry Pi 3 provides far more capability than is required for this project.  It is nice to have that kind of reserve. Does this lead to sloppy programming?  I don't think so. It means you don't need to spend hours trying to shoe-horn a project into a small processor nearly filled to capacity. Or as a friend used to say, "perfection is the enemy of good enough!"  The Raspberry is *good enough*.
