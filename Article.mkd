@@ -1,33 +1,34 @@
-`# Raspberry Multi-zone Thermostat
+# Raspberry Multi-zone Thermostat
 
-This project implements a multizone thermostat that can control a HVAC system based upon a schedule of target temperatures,and controlling zones (remote thermometers). 
+This project implements a multizone thermostat that can control a HVAC system with multiple zones but a single heater/cooler/blower. Based upon a schedule of target temperatures,and controlling zones (remote thermometers), the system manages the temperature in accordance with measurements at the controlling zone.
 
 The **Raspberry Multi-zone Thermostat** project was created to satisfy several objectives:
 
-- Gain familarity with the Raspberry 3 Pi
+- Gain familarity with the Raspberry 3 Pi computer
 
 - Learn the BlueJ IDE
 
 - Illustrate the use of Object-oriented Programming with a reasonably complex project
+
 - To implement a facility I need  to better manage my home HVAC system.
 
 
 ## Overview
 
-I live in a two-story home that has a single HVAC system serving the entire house. It heats and cools both stories well.  However,there is a single thermostat in a lowerlevel hall. It is very hard to set it so we are comfortable during the day in a lower family room or in the bedrooms upstairs in the evening.  Hence, we need at least two controlling thermostats.
+I live in a two-story home that has a single HVAC system serving the entire house. It heats and cools both stories well.  However,there is a single thermostat in a lowerlevel hall. It is very hard to set it so we are comfortable during the day in a lower family room or in the bedrooms upstairs in the evening.  Hence, we need at least two controlling thermostats--one upstairs and one downstairs.
 
 The Raspberry Multi-zone Thermost (MRT) consists of at least three Raspberry Pi 3 computers:
 
-- The controller computer interfaces with the HVAC system and includes a 4-Relay HAT
+- The controller computer interfaces with the HVAC system and includes a 4-Relay HAT interface to the HVAC.
 
-- Each of gthe other computers (as many as you have zones to monitor) serve as remote thermostats. These interface with an AM2302 temperature and humidity sensor.
+- Each of the other computers (as many as you have zones to monitor) serve as remote thermostats. Each of hese interfaces with an AM2302 temperature and humidity sensor.
 
-- The MRT is programmable.  Each of the remote thermostats is assigned a unique unit number.  A schedule is maintained in the controller that specifies:
+- The system is programmable.  Each of the remote thermostats is assigned a unique unit number.  A schedule is maintained in the controller that specifies:
 - - Time of day this schedule will start
 - - Unit number to be controllig
 - - Target temperature
 - - Mode (off,cooling, heating)
-- It is possible to define a different operation for each minute of the day.
+- It is possible to define a different operation for each minute of the day if  there was a need to do so.
 
 ## Software
 The application software is written entirely in Java. The project was carried out with the BlueJ IDE as my first experience with that platform.  The principal classes are:
@@ -80,6 +81,11 @@ The Controller class performs the following housekeeping and error checks upon i
 - Compares the unit requirements of the schedule with the RemoteThermometers it found.  
 - If all the required remote thermometers are not found, the schedule will be re-initialized and an new search for RemoteThermometers will be initiated.  This sequence will be repeated up to 10 times.  If the required remote thermometers are not found, the controller will shut down.
 - If all required RemoteThermometers are found, the controler will enter a loop to control the HVAC each minute in accordance with the schedule.  This control loop will continue indefinitely.
+
+AC Compressor protection logic is incorporated into the controller: 
+-   A 5-minute dead man timer will shut the Pi 3 down if it does not receive a reset from the controller within 5 minutes.
+-   On start up, the controller will not issue any control commands within the first 5 minutes.  This is to prevent the AC compressor from being turned on too soo after it may have been shut down.
+-   When the AC compressor is turned off, the controller will delay 5 minutes before it sends any other ccontrol commands. Again, this if to protec the compressor from turning on too soon.
 
 ***RelayHAT Class***
 This class provides a relay interface between the controller and the HVAC system. It is important to note that documentation received with the 4 Channel Relay HAT is wrong. I spent several hours to determine that the **GPIO pins specified in the 4-Relay HAT djocumentation are incorrect** for the Pi 3. The correct pins are:
