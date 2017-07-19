@@ -1,6 +1,0 @@
-0,2,74,cooling
-600,2,73,cooling
-1500,2,75,cooling
-1900,2,76,cooling
-2300,2,74,cooling
-9999
